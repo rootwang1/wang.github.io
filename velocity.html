@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional NDT Velocity & Thickness Tool</title>
+    <style>
+        :root { --primary: #2563eb; --dark: #1e293b; --bg: #f8fafc; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; line-height: 1.5; }
+        .container { background: #fff; width: 100%; max-width: 480px; padding: 32px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .header { border-bottom: 2px solid #f1f5f9; margin-bottom: 24px; padding-bottom: 16px; }
+        h2 { margin: 0; font-size: 20px; color: var(--dark); letter-spacing: -0.025em; }
+        .label-text { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; }
+        .input-box { margin-bottom: 20px; }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 16px; color: var(--dark); transition: all 0.2s; }
+        select:focus, input:focus { outline: none; border-color: var(--primary); ring: 2px solid #dbeafe; }
+        
+        /* 结果展示区 - 强调专业感 */
+        .result-panel { background: #f1f5f9; border-radius: 12px; padding: 20px; margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .result-item { text-align: left; }
+        .result-label { font-size: 11px; color: #64748b; font-weight: bold; }
+        .result-value { font-size: 24px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
+        
+        .action-btn { display: block; width: 100%; background: var(--dark); color: white; text-align: center; padding: 16px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 24px; transition: 0.2s; font-size: 15px; }
+        .action-btn:hover { background: #000; transform: translateY(-1px); }
+        .footer-note { font-size: 11px; color: #94a3b8; margin-top: 20px; text-align: center; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Velocity & Thickness Calculator</h2>
+    </div>
+
+    <div class="input-box">
+        <label class="label-text">1. Select Material</label>
+        <select id="material" onchange="calculate()">
+            <option value="5920">Carbon Steel (5920 m/s)</option>
+            <option value="5740">Stainless Steel (5740 m/s)</option>
+            <option value="6320">Aluminum (6320 m/s)</option>
+            <option value="4700">Copper (4700 m/s)</option>
+            <option value="5890">Cast Iron (5890 m/s)</option>
+            <option value="4390">Titanium (4390 m/s)</option>
+            <option value="2260">Lead (2260 m/s)</option>
+            <option value="custom">Custom Velocity...</option>
+        </select>
+    </div>
+
+    <div class="input-box" id="customVelBox" style="display:none;">
+        <label class="label-text">Custom Velocity (m/s)</label>
+        <input type="number" id="customVel" value="5920" oninput="calculate()">
+    </div>
+
+    <div class="input-box">
+        <label class="label-text">2. Round-trip Time (μs)</label>
+        <input type="number" id="time" step="0.01" placeholder="Enter micro-seconds" oninput="calculate()">
+    </div>
+
+    <div class="result-panel">
+        <div class="result-item">
+            <div class="result-label">VELOCITY</div>
+            <div class="result-value"><span id="vDisp">5920</span></div>
+            <div class="result-label">m/s</div>
+        </div>
+        <div class="result-item" style="border-left: 1px solid #cbd5e1; padding-left: 16px;">
+            <div class="result-label">THICKNESS</div>
+            <div class="result-value"><span id="tDisp">0.000</span></div>
+            <div class="result-label">mm</div>
+        </div>
+    </div>
+
+    <a href="#ContactForm" class="action-btn">Learn More About EMAT (High-Temp, No Couplant) →</a>
+
+    <div class="footer-note">
+        Formula: Thickness = (Velocity × Time) / 2 <br>
+        Standard longitudinal wave velocities used.
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const matSelect = document.getElementById('material');
+        const customBox = document.getElementById('customVelBox');
+        let velocity = parseFloat(matSelect.value);
+        
+        // 处理自定义声速
+        if (matSelect.value === 'custom') {
+            customBox.style.display = 'block';
+            velocity = parseFloat(document.getElementById('customVel').value) || 0;
+        } else {
+            customBox.style.display = 'none';
+        }
+
+        const time = parseFloat(document.getElementById('time').value) || 0;
+        
+        // 更新声速显示
+        document.getElementById('vDisp').innerText = velocity;
+
+        // 计算厚度: (v * t) / 2 / 1000  因为 t 是微秒
+        if (velocity > 0 && time > 0) {
+            const thickness = (velocity * time) / 2000;
+            document.getElementById('tDisp').innerText = thickness.toFixed(3);
+        } else {
+            document.getElementById('tDisp').innerText = "0.000";
+        }
+    }
+</script>
+
+</body>
+</html>
